@@ -16,7 +16,7 @@ class Game
       puts 'Where do you want to put it?'
 
       @current_player.mark_spot
-      
+      break if game_should_end?
       switch_player
     end
   end
@@ -26,6 +26,29 @@ class Game
       @current_player = @player2
     else
       @current_player = @player1
+    end
+  end
+
+  def game_should_end?
+    win? || draw?
+  end
+
+  def win?
+    if @playfield.win_condition(@current_player.marker)
+      @playfield.print
+      puts "#{@current_player.player_id} wins!"
+      true
+    else
+      false
+    end
+  end
+
+  def draw?
+    if @playfield.full?
+      puts 'It\'s a draw!'
+      true
+    else
+      false
     end
   end
 end
@@ -53,12 +76,13 @@ class Player
 end
 
 class Board
+  
   def initialize
     @board = Array(1..9)
   end
 
   def full?
-    @board.all { |i| i.to_i == 0 }
+    @board.all? { |i| i.to_i == 0 }
   end
 
   def legit_move?(position)
@@ -67,6 +91,15 @@ class Board
 
   def place_marker(position, marker)
     @board[position] = marker
+  end
+
+  def win_condition(marker)
+    WIN_COMBINATIONS.any? do |line|
+      a = @board[line[0]]
+      b = @board[line[1]]
+      c = @board[line[2]]
+      a == marker && b == marker && c == marker
+    end
   end
 
   def print

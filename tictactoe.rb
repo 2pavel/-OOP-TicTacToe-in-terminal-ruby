@@ -1,5 +1,10 @@
-WIN_COMBINATIONS = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+# frozen_string_literal: true
 
+WIN_COMBINATIONS = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]].freeze
+
+# The game is played between 2 human players where each of them enters position
+# they want to mark while taking turns. Playfield is simply an array of 9
+# positions they can choose from.
 class Game
   def initialize
     @playfield = Board.new
@@ -17,16 +22,17 @@ class Game
 
       @current_player.mark_spot
       break if game_should_end?
+
       switch_player
     end
   end
 
   def switch_player
-    if @current_player == @player1
-      @current_player = @player2
-    else
-      @current_player = @player1
-    end
+    @current_player = if @current_player == @player1
+                        @player2
+                      else
+                        @player1
+                      end
   end
 
   def game_should_end?
@@ -53,6 +59,8 @@ class Game
   end
 end
 
+# Player class objects are used to switch players between
+# turns and for them to be able to mark a spot they want
 class Player
   attr_accessor :player_id, :marker
   def initialize(player_id, marker, playfield)
@@ -75,14 +83,15 @@ class Player
   end
 end
 
+# Board class is used to operate on the game board
+# mark spots, check win conditions, print board etc.
 class Board
-  
   def initialize
     @board = Array(1..9)
   end
 
   def full?
-    @board.all? { |i| i.to_i == 0 }
+    @board.all? { |i| i.to_i.zero? }
   end
 
   def legit_move?(position)
@@ -104,7 +113,7 @@ class Board
 
   def print
     puts " #{@board[0]} | #{@board[1]} | #{@board[2]} "
-    puts line = " - - - - -"
+    puts line = ' - - - - -'
     puts " #{@board[3]} | #{@board[4]} | #{@board[5]} "
     puts line
     puts " #{@board[6]} | #{@board[7]} | #{@board[8]} "
@@ -113,5 +122,3 @@ end
 
 tic_tac_toe = Game.new
 tic_tac_toe.play
-
-
